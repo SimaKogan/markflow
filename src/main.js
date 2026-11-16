@@ -3,6 +3,8 @@ import 'katex/dist/katex.min.css';
 import { EditorView, basicSetup } from 'codemirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { tags as t } from '@lezer/highlight';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/common';
@@ -72,6 +74,23 @@ function render(src) {
   return html;
 }
 
+/* ---------- Editor syntax colours (follow the active theme via CSS variables) ---------- */
+const editorHighlight = HighlightStyle.define([
+  { tag: [t.heading, t.heading1, t.heading2, t.heading3], color: 'var(--accent)', fontWeight: '700', textDecoration: 'none' },
+  { tag: t.strong, fontWeight: '700' },
+  { tag: t.emphasis, fontStyle: 'italic' },
+  { tag: t.strikethrough, textDecoration: 'line-through' },
+  { tag: [t.link, t.url], color: 'var(--accent2)', textDecoration: 'none' },
+  { tag: [t.processingInstruction, t.meta, t.contentSeparator], color: 'var(--muted)' },
+  { tag: t.quote, color: 'var(--muted)', fontStyle: 'italic' },
+  { tag: [t.monospace, t.string, t.special(t.string)], color: 'var(--hl-str)' },
+  { tag: [t.keyword, t.operatorKeyword, t.modifier], color: 'var(--hl-kw)' },
+  { tag: [t.number, t.bool, t.atom, t.null], color: 'var(--hl-num)' },
+  { tag: [t.comment, t.lineComment, t.blockComment], color: 'var(--hl-com)', fontStyle: 'italic' },
+  { tag: [t.function(t.variableName), t.definition(t.variableName), t.className, t.typeName, t.propertyName], color: 'var(--hl-fn)' },
+  { tag: [t.variableName, t.punctuation, t.operator, t.bracket], color: 'var(--text)' }
+]);
+
 /* ---------- Editor ---------- */
 const preview = $('#preview');
 const wrap = $('#preview-wrap');
@@ -84,6 +103,7 @@ const view = new EditorView({
   parent: $('#editor'),
   extensions: [
     basicSetup,
+    syntaxHighlighting(editorHighlight),
     markdown({ codeLanguages: languages }),
     EditorView.lineWrapping,
     EditorView.updateListener.of((u) => { if (u.docChanged) onChange(); })

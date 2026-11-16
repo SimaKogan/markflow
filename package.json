@@ -10,12 +10,21 @@
     "start": "vite build && electron .",
     "dist": "vite build && electron-builder"
   },
-  "keywords": ["markdown", "editor", "electron", "vite", "codemirror", "katex"],
+  "keywords": [
+    "markdown",
+    "editor",
+    "electron",
+    "vite",
+    "codemirror",
+    "katex"
+  ],
   "author": "Serafima Kogan <serafima.kogan@gmail.com> (https://github.com/SimaKogan)",
   "license": "MIT",
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.0",
+    "@codemirror/language": "^6.10.3",
     "@codemirror/language-data": "^6.5.1",
+    "@lezer/highlight": "^1.2.1",
     "codemirror": "^6.0.1",
     "dompurify": "^3.1.6",
     "highlight.js": "^11.10.0",
@@ -30,7 +39,13 @@
   "build": {
     "appId": "com.simakogan.markflow",
     "productName": "Markflow",
-    "files": ["dist/**", "electron/**", "package.json"],
-    "directories": { "output": "release" }
+    "files": [
+      "dist/**",
+      "electron/**",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    }
   }
 }
