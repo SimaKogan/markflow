@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ws:" />
+  <title>Markflow</title>
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="logo">M↓</span><span>Markflow</span><span id="file-name" class="file-name">untitled.md</span></div>
+      <div class="tools" id="tools">
+        <button data-act="h" title="Heading">H</button>
+        <button data-act="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+        <button data-act="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+        <button data-act="code" title="Code">&lt;/&gt;</button>
+        <button data-act="link" title="Link (Ctrl+K)">🔗</button>
+        <button data-act="quote" title="Quote">❝</button>
+        <button data-act="list" title="List">•</button>
+      </div>
+      <div class="actions">
+        <button id="btn-open" title="Open (Ctrl+O)">Open</button>
+        <button id="btn-save" title="Save (Ctrl+S)">Save</button>
+        <button id="btn-pdf" title="Export PDF (Ctrl+P)">PDF</button>
+        <button id="btn-theme" title="Toggle theme">◐</button>
+      </div>
+    </header>
+    <main class="panes">
+      <section class="pane" id="editor"></section>
+      <section class="pane preview-wrap" id="preview-wrap"><article id="preview" class="markdown"></article></section>
+    </main>
+    <footer class="status"><span id="stats">0 words</span><span id="saved">Saved</span></footer>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
