@@ -1,0 +1,7 @@
+{
+  "budgets": [
+    { "name": "Entry JS", "path": "dist/assets/index-*.js", "limit": "430 kB", "mode": "gzip" },
+    { "name": "All JS",   "path": "dist/assets/*.js",       "limit": "850 kB", "mode": "gzip" },
+    { "name": "CSS",      "path": "dist/assets/*.css",      "limit": "12 kB",  "mode": "gzip" }
+  ]
+}
