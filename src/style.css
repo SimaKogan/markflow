@@ -69,6 +69,15 @@ button:hover { background: var(--code-bg); border-color: var(--border); }
 @media (max-width: 800px) { .panes { grid-template-columns: 1fr; } #preview-wrap { display: none; } .tools { display: none; } }
 
 @media print {
+  /* Always print with the light palette, whatever theme is active on screen. */
+  html[data-theme] {
+    --text: #1c2033; --muted: #4a4f63; --accent: #6247f5; --accent2: #0fa58f;
+    --border: rgba(20,24,40,.25); --code-bg: #f1f2f7;
+    --hl-kw: #8e3fc2; --hl-str: #2f8a2f; --hl-num: #c4511f; --hl-com: #6b7088; --hl-fn: #2159c9;
+  }
+  /* Gradient text relies on a background, which is not printed by default. */
+  .markdown h1 { background: none; color: #1c2033; -webkit-text-fill-color: currentColor; }
+  .markdown pre { white-space: pre-wrap; break-inside: avoid; }
   body { overflow: visible; background: #fff; color: #000; }
   .bg-glow, .topbar, .status, #editor { display: none !important; }
   .app { padding: 0; display: block; }

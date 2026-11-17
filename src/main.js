@@ -9,6 +9,7 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/common';
 import katex from 'katex';
+import { protectMath, restoreMath } from './math.mjs';
 
 const $ = (s) => document.querySelector(s);
 const STORE = { doc: 'markflow:doc', theme: 'markflow:theme' };
@@ -51,27 +52,13 @@ marked.use({
   }
 });
 
-function renderMath(src) {
-  const maths = [];
-  const put = (tex, display) => {
-    try {
-      maths.push(katex.renderToString(tex, { displayMode: display, throwOnError: false }));
-    } catch { maths.push(tex); }
-    return `@@MATH${maths.length - 1}@@`;
-  };
-  // Leave fenced code untouched: odd chunks of a split on ``` are code.
-  const out = src.split(/(```[\s\S]*?```)/g).map((chunk, i) => i % 2 ? chunk : chunk
-    .replace(/\$\$([\s\S]+?)\$\$/g, (_, t) => put(t, true))
-    .replace(/(?<![\\$])\$(?!\s)([^$\n]+?)(?<!\s)\$(?!\d)/g, (_, t) => put(t, false))
-  ).join('');
-  return { out, maths };
-}
+const texToHtml = (tex, display) =>
+  katex.renderToString(tex, { displayMode: display, throwOnError: false });
 
 function render(src) {
-  const { out, maths } = renderMath(src);
-  let html = DOMPurify.sanitize(marked.parse(out, { async: false }));
-  html = html.replace(/@@MATH(\d+)@@/g, (_, n) => maths[+n]);
-  return html;
+  const { out, maths } = protectMath(src, texToHtml);
+  const html = DOMPurify.sanitize(marked.parse(out, { async: false }));
+  return restoreMath(html, maths);
 }
 
 /* ---------- Editor syntax colours (follow the active theme via CSS variables) ---------- */
@@ -96,6 +83,7 @@ const preview = $('#preview');
 const wrap = $('#preview-wrap');
 let filePath = null;
 let dirty = false;
+let loading = false; // true while a file is being loaded into the editor
 let timer;
 
 const view = new EditorView({
@@ -120,13 +108,15 @@ function update() {
 }
 
 function onChange() {
+  if (loading) return;
   dirty = true;
   $('#saved').textContent = 'Editing…';
   clearTimeout(timer);
   timer = setTimeout(() => {
     update();
-    localStorage.setItem(STORE.doc, text());
-    $('#saved').textContent = filePath ? 'Unsaved changes' : 'Draft saved';
+    try { localStorage.setItem(STORE.doc, text()); } catch { /* storage full or blocked */ }
+    // The user may have pressed Save while the timer was pending.
+    $('#saved').textContent = !dirty ? 'Saved' : filePath ? 'Unsaved changes' : 'Draft saved';
   }, 150);
 }
 
@@ -171,7 +161,14 @@ function setName() {
   $('#file-name').textContent = filePath ? filePath.split(/[\\/]/).pop() : 'untitled.md';
 }
 function setText(s) {
-  view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: s } });
+  clearTimeout(timer);
+  loading = true;
+  try {
+    view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: s } });
+  } finally {
+    loading = false;
+  }
+  update();
 }
 
 async function openFile() {
@@ -188,6 +185,8 @@ async function openFile() {
       filePath = null;
       $('#file-name').textContent = f.name;
       setText(await f.text());
+      dirty = false;
+      $('#saved').textContent = 'Opened';
     };
     input.click();
     return;

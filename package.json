@@ -4,11 +4,20 @@
   "version": "1.0.0",
   "description": "A fast, beautiful Markdown editor with live preview, KaTeX and syntax highlighting.",
   "main": "electron/main.cjs",
+  "homepage": "https://github.com/SimaKogan/markflow#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SimaKogan/markflow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SimaKogan/markflow/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "start": "vite build && electron .",
-    "dist": "vite build && electron-builder"
+    "dist": "vite build && electron-builder",
+    "test": "node --test"
   },
   "keywords": [
     "markdown",
@@ -20,6 +29,9 @@
   ],
   "author": "Serafima Kogan <serafima.kogan@gmail.com> (https://github.com/SimaKogan)",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.0",
     "@codemirror/language": "^6.10.3",
